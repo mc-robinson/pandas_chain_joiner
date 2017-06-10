@@ -38,7 +38,7 @@ atom_df = pd.concat([hetatm_df, atom_df])
 #sort based on atom_number so it's in order
 atom_df = atom_df.sort_values(by=['atom_number'])
 #reset the indicies of the df
-atom_df = atom_df.reset_index(drop=True)
+#atom_df = atom_df.reset_index(drop=True)
 #take out water molecules
 atom_df = atom_df.loc[atom_df['residue_name'] != 'HOH']
 #reset the indicies of the df
@@ -53,6 +53,20 @@ pdb_id = os.path.splitext(os.path.basename(sys.argv[1]))[0]
 
 #list so can make chain dictionaries later
 chain_labels_l = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+
+#make a dictionary for translating chain id's into A,B,C,D... as Modeller likes
+id_dict = {}
+id_list = list(atom_df['chain_id'])
+alphabet_idx = 0
+for i in range(1,len(list(id_list))):
+    if id_list[i] != id_list[i-1]:
+        id_dict[id_list[i-1]] = chain_labels_l[alphabet_idx] 
+        alphabet_idx = alphabet_idx + 1
+    if (i == len(list(id_list))-1):
+       id_dict[id_list[i]] = chain_labels_l[alphabet_idx]  
+
+#now change atom_df to have these labels
+atom_df['chain_id'] = atom_df['chain_id'].apply(lambda x: id_dict[x])
 
 
 def main():
@@ -447,7 +461,8 @@ def trim_ligand_seq(hetatm_seq):
     seq = hetatm_seq[0:-1] #take off the final *
     new_seq = seq
     for j in reversed(range(len(seq))):
-        if not(seq[j] == '/' or seq[j] == '.'):
+        #if not(seq[j] == '/' or seq[j] == '.'):
+        if (seq[j] in chain_labels_l):
             new_seq = seq[0:j+1]
             ligand_str = seq[j+1:]
             break
@@ -488,7 +503,7 @@ def make_missing_res_dict(others_df):
     missing_res_dict = {k:[] for k in chain_labels_l}
     # populate the dict based on chain id
     for l in missing_res_ls:
-        missing_res_dict[l[1]].append([l[0],l[2]])
+        missing_res_dict[id_dict[l[1]]].append([l[0],l[2]])
     # now seperate into loops, based on if res_num is sequential
     missing_res_dict_tmp = {k:[] for k in chain_labels_l}
     #loop over dictionary

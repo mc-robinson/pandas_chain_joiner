@@ -36,7 +36,7 @@ subprocess.call(['python', 'pandas_chain_joiner.py', pdb_id + '.pdb', pdb_id + '
 os.makedirs('./' + pdb_id +'_output/')
 
 #get a list of all output files in the working directory
-output_files = [filename for filename in os.listdir('.') if filename.startswith(pdb_id) and os.path.isfile('./filename')]
+output_files = [filename for filename in os.listdir('.') if filename.startswith(pdb_id)]
 
 #mv these files to the output folder
 for file in output_files:

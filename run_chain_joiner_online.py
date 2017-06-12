@@ -32,7 +32,7 @@ def main():
     
     REQUIREMENTS:
     Preferably Anaconda python 3 environment with following modules:
-    
+
     Modeller
     pandas 
     biopandas
@@ -82,10 +82,14 @@ def main():
         subprocess.call(['python', 'pandas_chain_joiner.py', pdb_id + '.pdb', pdb_id + '.fasta','-a'])
 
     #make a folder for the output
-    os.makedirs('./' + pdb_id +'_output/')
+    dir_name = './' + pdb_id +'_output/'
+    os.makedirs(dir_name)
 
     #get a list of all output files in the working directory
     output_files = [filename for filename in os.listdir('.') if filename.startswith(pdb_id)]
+    #remove the folder name
+    if (pdb_id + '_output') in output_files:
+        output_files.remove(pdb_id + '_output')
 
     #mv these files to the output folder
     for file in output_files:

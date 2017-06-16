@@ -92,7 +92,7 @@ def get_missing_res_l(end_res_l):
 
     return missing_res_l
 
-def index_containing_substring(the_list, substring):
+def first_index_containing_substring(the_list, substring):
     for i, s in enumerate(the_list):
         if substring in s:
               return i
@@ -117,7 +117,10 @@ def write_pdb(missing_res_l):
             str_lst.append(' 465     UNK ' + str(l[-1]) + '   ' + str(res_num))
 
     #find where to index the string
-    insert_idx = index_containing_substring(pdb_data,'REMARK 500')
+    insert_idx = first_index_containing_substring(pdb_data,'REMARK 500')
+    if (insert_idx == -1):
+        insert_idx = first_index_containing_substring(pdb_data,'ATOM')
+
 
     #add REMARK to beginning of every entry
     for i in range(len(str_lst)):
